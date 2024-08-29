@@ -2,6 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ @brief
+ @param
+ @returns
+ */
+
 // Range for gradient clip
 #define MIN_RANGE -10.0
 #define MAX_RANGE 10
@@ -70,6 +76,94 @@ Value *defaultValue(float x) {
   TODO: build operations (+, -, *, **, relu)
  */
 
+/**
+ @brief add two scalars and compute the gradient
+ @param (a: Value) Value object
+ @param (b: Value) Value object
+ @returns new Value object "c" with the scalar = a + b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *add(Value *a, Value *b) {
+  Value *res = defaultValue(0);
+
+  res->data = a->data + b->data;
+  // res->grad = 0;
+  res->children = (Value **)malloc(2 * sizeof(Value *));
+
+  res->children[0] = a;
+  res->children[1] = b;
+  res->n_children = 2;
+  // res->backward = add_backward; //gradient computed in add_backwards
+
+  return res;
+}
+
+/**
+ @brief subtract two scalars and compute the gradient
+ @param (a: Value) Value object
+ @param (b: Value) Value object
+ @returns new Value object "c" with the scalar = a - b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *sub(Value *a, Value *b) {
+  Value *res = defaultValue(0);
+
+  res->data = a->data - b->data;
+  // res->grad = 0;
+  res->children = (Value **)malloc(2 * sizeof(Value *));
+
+  res->children[0] = a;
+  res->children[1] = b;
+  res->n_children = 2;
+  // res->backward = sub_backward; //gradient computed in sub_backward
+
+  return res;
+}
+
+/**
+ @brief subtract two scalars and compute the gradient
+ @param (a: Value) Value object
+ @param (b: Value) Value object
+ @returns new Value object "c" with the scalar = a * b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *mul(Value *a, Value *b) {
+  Value *res = defaultValue(0);
+
+  res->data = a->data * b->data;
+  // res->grad = 0;
+  res->children = (Value **)malloc(2 * sizeof(Value *));
+
+  res->children[0] = a;
+  res->children[1] = b;
+  res->n_children = 2;
+  // res->backward = mul_backward; //gradient computed in  mul_backward
+
+  return res;
+}
+
+/**
+ @brief raise one scalar to the power of the other and compute the gradient
+ @param (a: Value) Value object
+ @param (b: Value) Value object
+ @returns new Value object "c" with the scalar = a ^ b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *pwr(Value *a, Value *b) {
+  Value *res = defaultValue(0);
+
+  res->data = powf(a->data, b->data);
+  // res->grad = 0;
+  res->children = (Value **)malloc(2 * sizeof(Value *));
+
+  res->children[0] = a;
+  res->children[1] = b;
+  res->n_children = 2;
+  // res->backward = mul_backward; //gradient computed in  mul_backward
+
+  return res;
+}
+
 /** ********** UTILS ********** **/
 
 /**
@@ -96,6 +190,8 @@ void grad_clip(Value *obj) {
 int main() {
   Value *a = defaultValue(3);
   Value *b = defaultValue(2);
+  Value *c = add(a, b);
   print(a);
   print(b);
+  print(c);
 }
