@@ -68,6 +68,26 @@ void grad_clip(Value *obj) {
   }
 }
 
+/**
+ * @brief Frees memory allocated for a Value node and its children
+ *
+ * This function recursively frees the memory allocated for a Value node
+ * and all of its children. It first iterates through the children array,
+ * freeing each child node, and then frees the memory allocated for the
+ * current node itself.
+ *
+ * @param val Pointer to the Value node to be freed
+ */
+void free_node(Value *val) {
+  for (int i = 0; i < val->n_children; i++) {
+    if (val->children[i]) {
+      free(val->children[i]);
+      val->n_children -= 1;
+    }
+  }
+  free(val);
+}
+
 /** ********** BACKPASS LOGIC ********** **/
 
 /**
