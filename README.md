@@ -1,10 +1,10 @@
 # Micrograd Engine
 
-Trying to build a micrograd engine in c. Inspired by [Karpathy's micrograd repo](https://github.com/karpathy/micrograd).
+Trying to build a micrograd engine in c. Inspired by .
 
 ## Overview
 
-This is a minimalistic automatic differentiation (autograd) engine implemented in C. It's inspired by larger frameworks like PyTorch but designed to be simple and educational. The engine supports basic scalar operations and their gradients, allowing for the construction and differentiation of computational graphs.
+This is a minimalistic automatic differentiation (autograd) engine implemented in C. It's inspired by [Karpathy's micrograd in python](https://github.com/karpathy/micrograd). The engine supports basic scalar operations and their gradients, allowing for the construction and differentiation of computational graphs.
 
 ## Features
 
