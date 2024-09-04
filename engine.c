@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- @brief
- @param
- @returns
- */
-
 // limit the magnitude of the gradients (used in gradient clip)
 #define MIN_RANGE -10.0
 #define MAX_RANGE 10
@@ -77,9 +71,19 @@ void grad_clip(Value *obj) {
 /** ********** BACKPASS LOGIC ********** **/
 
 /**
- @brief build DAG and topologically sort it (helper for reverse pass)
- @param
-*/
+ * @brief Builds a Directed Acyclic Graph (DAG) and topologically sorts it
+ *
+ * This function constructs a DAG from the given Value object and its children,
+ * then performs a topological sort on the graph. It's a crucial helper for the
+ * reverse pass in backpropagation, ensuring that gradients are computed in the
+ * correct order.
+ *
+ * @param val Pointer to the root Value object
+ * @param dag Array to store the topologically sorted Value objects
+ * @param dag_size Pointer to the size of the DAG
+ * @param visited Array to keep track of visited Value objects
+ * @param len_visited Pointer to the number of visited Value objects
+ */
 void build_dag(Value *val, Value **dag, int *dag_size, Value **visited,
                int *len_visited) {
   for (int i = 0; i < *dag_size; i++)
@@ -97,9 +101,14 @@ void build_dag(Value *val, Value **dag, int *dag_size, Value **visited,
 }
 
 /**
-  @brief reverse pass function
-  @param
-  @returns
+ * @brief Performs the reverse pass (backpropagation) on a computational graph
+ *
+ * This function executes the backward pass of automatic differentiation.
+ * It builds a topologically sorted DAG, initializes the gradient of the root
+ * node to 1.0, and then propagates the gradients backward through the graph,
+ * calling each node's reverse function to compute partial derivatives.
+ *
+ * @param root Pointer to the root Value object of the computational graph
  */
 void reverse(Value *root) {
   Value *dag[MAX_DAG_SIZE];
@@ -174,8 +183,14 @@ void pwr_reverse(Value *c) {
 }
 
 /**
- @brief Computes gradient for ReLU function during backpropagation
- @param (c: Value) Value object
+ * @brief Computes gradient for ReLU function during backpropagation
+ *
+ * This function calculates the gradient for the Rectified Linear Unit (ReLU)
+ * activation during the backward pass of backpropagation. ReLU's gradient is 1
+ * for positive inputs and 0 for negative or zero inputs. This preserves the
+ * gradient for active (positive) neurons while blocking it for inactive ones.
+ *
+ * @param c Pointer to the Value object representing the ReLU operation
  */
 void relu_reverse(Value *c) {
   Value *a = c->children[0];
@@ -309,15 +324,15 @@ Value *relu(Value *a) {
   return res;
 }
 
-/** ********** MAIN ********** **/
-int main() {
-  Value *a = defaultValue(-3);
-  Value *b = defaultValue(2);
-  Value *c = sub(a, b);
+// /** ********** MAIN ********** **/
+// int main() {
+//   Value *a = defaultValue(-3);
+//   Value *b = defaultValue(2);
+//   Value *c = sub(a, b);
 
-  reverse(c);
+//   reverse(c);
 
-  print(a);
-  print(b);
-  print(c);
-}
+//   print(a);
+//   print(b);
+//   print(c);
+// }
