@@ -173,6 +173,16 @@ void pwr_reverse(Value *c) {
   grad_clip(c->children[1]);
 }
 
+/**
+ @brief Computes gradient for ReLU function during backpropagation
+ @param (c: Value) Value object
+ */
+void relu_reverse(Value *c) {
+  Value *a = c->children[0];
+  a->grad += (a->data > 0) ? c->grad : 0;
+  grad_clip(a);
+}
+
 /** ********** OPERATORS ********** **/
 
 /**
@@ -200,6 +210,18 @@ Value *add(Value *a, Value *b) {
   res->reverse = add_reverse; // gradient computed in add_backwards
 
   return res;
+}
+
+/**
+ @brief subtract two scalars and compute the gradient
+ @param (a: Value) Value object
+ @param (b: Value) Value object
+ @returns new Value object "c" with the scalar = a - b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *sub(Value *a, Value *b) {
+  Value *negB = defaultValue(-b->data);
+  return add(a, negB);
 }
 
 /**
@@ -248,11 +270,50 @@ Value *pwr(Value *a, Value *b) {
   return res;
 }
 
+/**
+ @brief divide two scalars and compute the gradient
+ @param (a: Value) Value object (numerator)
+ @param (b: Value) Value object (denominator)
+ @returns new Value object "c" with the scalar = a / b where a,b are the
+ children of c, and the gradient computed respectively
+ */
+Value *divide(Value *a, Value *b) {
+  Value *reciprocal = pwr(b, defaultValue(-1));
+  return mul(a, reciprocal);
+}
+
+/**
+ * @brief Applies the Rectified Linear Unit (ReLU) activation function to a
+ * Value object
+ *
+ * The ReLU function is defined as f(x) = max(0, x). It returns x if x is
+ * positive, and 0 otherwise. This non-linear activation function is commonly
+ * used in neural networks to introduce non-linearity into the model.
+ *
+ * @param a Pointer to the input Value object
+ * @return Pointer to a new Value object containing the result of the ReLU
+ * operation
+ */
+Value *relu(Value *a) {
+  Value *res = defaultValue(0);
+
+  res->data = (a->data > 0) ? a->data : 0;
+  res->grad = 0;
+
+  res->children = (Value **)malloc(sizeof(Value *));
+  res->children[0] = a;
+  res->n_children = 1;
+
+  res->reverse = relu_reverse;
+
+  return res;
+}
+
 /** ********** MAIN ********** **/
 int main() {
-  Value *a = defaultValue(3);
+  Value *a = defaultValue(-3);
   Value *b = defaultValue(2);
-  Value *c = add(a, b);
+  Value *c = sub(a, b);
 
   reverse(c);
 
